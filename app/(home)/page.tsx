@@ -18,6 +18,8 @@ import {
   serializeJsonLd,
   websiteJsonLd,
 } from "@/lib/seo";
+import { PopupSlideshow } from "@/features/popup/components";
+import { getActivePopupsService } from "@/features/popup/services";
 
 export const metadata = buildMetadata({
   title: "MTsN 2 Kota Kediri | Madrasah Riset, Prestasi, dan Karakter",
@@ -32,9 +34,10 @@ export const metadata = buildMetadata({
 });
 
 export default async function Home() {
-  const [news, research] = await Promise.all([
+  const [news, research, popups] = await Promise.all([
     getNewsWithLimitService(4),
     getLatestResearchService(1),
+    getActivePopupsService(),
   ]);
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300 selection:bg-emerald-500/30 selection:text-emerald-900 dark:selection:text-emerald-100">
@@ -44,6 +47,7 @@ export default async function Home() {
           __html: serializeJsonLd([schoolJsonLd(), websiteJsonLd()]),
         }}
       />
+      <PopupSlideshow items={popups} />
       <Hero />
       <Intro />
       {/*<Medsos />*/}

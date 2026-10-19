@@ -1,5 +1,10 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/seo";
+import {
+  complaintPages,
+  ppidDetailPages,
+  surveyPages,
+} from "@/components/data/public-information";
 import type { NewsPaginateDTO } from "@/types/dto/news";
 import type { ResearchPaginateDTO } from "@/types/dto/research";
 
@@ -25,7 +30,10 @@ const staticRoutes = [
   "/program-madrasah/sarana-prasarana",
   "/ppdb",
   "/ppid",
+  ...ppidDetailPages.map((page) => `/ppid/${page.slug}`),
   "/zona-integritas",
+  ...complaintPages.map((page) => `/zona-integritas/${page.slug}`),
+  ...surveyPages.map((page) => `/zona-integritas/${page.slug}`),
 ];
 
 function routeEntry(

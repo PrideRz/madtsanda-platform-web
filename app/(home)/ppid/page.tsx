@@ -59,7 +59,7 @@ export default function PpidPage() {
       </section>
 
       <section
-        id="profil-ppid"
+        id="informasi-ppid"
         className="border-t border-zinc-200 bg-zinc-50 py-14 dark:border-zinc-800 dark:bg-zinc-900/40 md:py-20"
       >
         <div className="mx-auto max-w-7xl px-4 md:px-6">
@@ -76,7 +76,8 @@ export default function PpidPage() {
             {ppidSections.map((section, index) => (
               <article
                 key={section.title}
-                className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 md:p-8"
+                id={section.id}
+                className="scroll-mt-32 rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 md:p-8"
               >
                 <p className="font-mono text-sm font-bold text-emerald-600 dark:text-emerald-300">
                   0{index + 1}

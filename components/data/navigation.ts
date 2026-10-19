@@ -1,4 +1,5 @@
 import { programMadrasahNavItems } from "./program-madrasah";
+import type { NavigationSection } from "@/types/navigation";
 
 const aboutUs = [
   {
@@ -76,18 +77,94 @@ export const services = [
 
 const ziPpid = [
   {
-    label: "Zona Integritas",
+    label: "Eviden",
     description: "Eviden pembangunan ZI menuju WBK dan layanan bersih.",
     href: "/zona-integritas",
+  },
+  {
+    label: "Pengaduan",
+    description: "Akses kanal pengaduan dan pelaporan layanan.",
+    href: "/zona-integritas#pengaduan",
+    children: [
+      {
+        label: "Pengaduan WBS Daring",
+        description: "Kanal pengaduan whistleblowing system daring.",
+        href: "/zona-integritas/pengaduan-wbs-daring",
+      },
+      {
+        label: "Form Pengaduan",
+        description: "Formulir pengaduan layanan madrasah.",
+        href: "/zona-integritas/form-pengaduan",
+      },
+      {
+        label: "SK Span Lapor",
+        description: "Dokumen keputusan layanan SPAN Lapor.",
+        href: "/zona-integritas/sk-span-lapor",
+      },
+      {
+        label: "Kontak Aduan Laporan Kemenag Kota Kediri",
+        description: "Kontak pengaduan laporan Kemenag Kota Kediri.",
+        href: "/zona-integritas/kontak-aduan-kemenag-kota-kediri",
+      },
+      {
+        label: "Lapor.go.id",
+        description: "Kanal pengaduan publik nasional.",
+        href: "/zona-integritas/lapor-go-id",
+      },
+    ],
+  },
+  {
+    label: "Survey",
+    description: "Akses informasi dan hasil survei layanan.",
+    href: "/zona-integritas#survey",
+    children: [
+      {
+        label: "Survey Layanan Publik",
+        description: "Survei pengalaman dan kualitas layanan publik.",
+        href: "https://smart.mtsn2kotakediri.web.id/survey.php",
+      },
+      {
+        label: "Indeks Survey Layanan",
+        description: "Indeks hasil survei layanan madrasah.",
+        href: "https://smart.mtsn2kotakediri.web.id/lapsurvei.php",
+      },
+    ],
   },
   {
     label: "PPID",
     description: "Profil, struktur, visi misi, dan tugas layanan informasi publik.",
     href: "/ppid",
+    children: [
+      {
+        label: "Profil PPID",
+        description: "Profil Pejabat Pengelola Informasi dan Dokumentasi.",
+        href: "/ppid/profil-ppid",
+      },
+      {
+        label: "Struktur PPID",
+        description: "Struktur pengelolaan layanan informasi publik.",
+        href: "/ppid/struktur-ppid",
+      },
+      {
+        label: "Visi Misi Moto PPID",
+        description: "Arah, misi, dan moto layanan PPID.",
+        href: "/ppid/visi-misi-moto-ppid",
+      },
+      {
+        label: "Tujuan dan Fungsi PPID",
+        description: "Tujuan dan fungsi pengelolaan informasi publik.",
+        href: "/ppid/tujuan-fungsi-ppid",
+      },
+      {
+        label: "SK PPID",
+        description: "Surat keputusan pengelolaan layanan PPID.",
+        href: "/ppid/sk-ppid",
+      },
+    ],
   },
 ];
 
-export const navigationData = [
+export const navigationData: NavigationSection[] = [
   {
     label: "Program Madrasah",
     description: "Kurikulum, kesiswaan, humas, dan sarana prasarana.",
@@ -104,7 +181,7 @@ export const navigationData = [
     items: services,
   },
   {
-    label: "ZI - PPID",
+    label: "Zona Integritas",
     description: "Zona Integritas dan layanan informasi publik madrasah.",
     items: ziPpid,
   },
@@ -123,5 +200,5 @@ export const footerLinks = [
   { label: "PPDB", href: "/ppdb" },
   { label: "Fasilitas", href: "/facilities" },
   { label: "Research", href: "/research" },
-  { label: "ZI - PPID", href: "/zona-integritas" },
+  { label: "Zona Integritas", href: "/zona-integritas" },
 ];

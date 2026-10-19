@@ -21,7 +21,7 @@ export default function ZonaIntegritasPage() {
               Zona Integritas
             </Badge>
             <h1 className="mt-5 text-4xl font-black tracking-tight md:text-6xl">
-              Eviden ZI Madtsanda
+              Zona Integritas Madtsanda
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-zinc-600 dark:text-zinc-400">
               Pusat akses eviden pembangunan Zona Integritas MTsN 2 Kota Kediri.
@@ -105,6 +105,54 @@ export default function ZonaIntegritasPage() {
                 </div>
               </a>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-zinc-200 bg-white py-14 dark:border-zinc-800 dark:bg-zinc-950 md:py-20">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 md:px-6 lg:grid-cols-2">
+          <div id="pengaduan" className="scroll-mt-32 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800 md:p-8">
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-emerald-500">
+              Pengaduan
+            </p>
+            <h2 className="mt-2 text-3xl font-black">Kanal pengaduan</h2>
+            <div className="mt-6 space-y-4 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+              <p id="pengaduan-wbs-daring" className="scroll-mt-32">
+                Pengaduan WBS Daring
+              </p>
+              <p id="form-pengaduan" className="scroll-mt-32">
+                Form Pengaduan
+              </p>
+              <p id="sk-span-lapor" className="scroll-mt-32">
+                SK Span Lapor
+              </p>
+              <p id="kontak-aduan-kemenag" className="scroll-mt-32">
+                Kontak Aduan Laporan Kemenag Kota Kediri
+              </p>
+              <a
+                href="https://www.lapor.go.id/"
+                target="_blank"
+                rel="noreferrer"
+                className="block font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-300"
+              >
+                Lapor.go.id
+              </a>
+            </div>
+          </div>
+
+          <div id="survey" className="scroll-mt-32 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800 md:p-8">
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-emerald-500">
+              Survey
+            </p>
+            <h2 className="mt-2 text-3xl font-black">Survey layanan</h2>
+            <div className="mt-6 space-y-4 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+              <p id="survey-layanan-publik" className="scroll-mt-32">
+                Survey Layanan Publik
+              </p>
+              <p id="indeks-survey-layanan" className="scroll-mt-32">
+                Indeks Survey Layanan
+              </p>
+            </div>
           </div>
         </div>
       </section>

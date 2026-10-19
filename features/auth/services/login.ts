@@ -18,9 +18,14 @@ async function accessTokenService(payload: LoginDTO) {
     });
 
     if (!result.ok) {
+      const message =
+        result.statusCode === 0
+          ? "Backend API tidak dapat dihubungi. Pastikan server backend berjalan dan NEXT_PUBLIC_API_URL sudah benar."
+          : result.error || "Username atau password salah";
+
       return {
         data: {
-          message: result.error || "Username atau password salah",
+          message,
           code: result.statusCode || 401,
         },
       };

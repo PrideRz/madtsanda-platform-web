@@ -11,6 +11,7 @@ import {
   Edit20Color,
   ContentView24Color,
   DocumentEdit16Color,
+  Image24Color,
 } from "@fluentui/react-icons";
 
 export const sidebarItems: SidebarItem[] = [
@@ -133,6 +134,14 @@ export const sidebarItems: SidebarItem[] = [
         route: "/dashboard/library/create",
       },
     ],
+  },
+  {
+    id: "popup",
+    label: "Popup",
+    icon: Image24Color,
+    route: "/dashboard/popup",
+    hasSubItems: false,
+    minRole: "admin",
   },
   {
     id: "settings",

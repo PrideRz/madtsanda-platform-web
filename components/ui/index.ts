@@ -20,6 +20,7 @@ export * from "./skeleton";
 export * from "./sonner";
 export * from "./switch";
 export * from "./table";
+export * from "./textarea";
 export * from "./tooltip";
 export * from "./shiny-button";
 export * from "./moving-border";
