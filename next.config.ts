@@ -11,7 +11,7 @@ const securityHeaders = [
     },
     {
         key: "X-Frame-Options",
-        value: "DENY",
+        value: "SAMEORIGIN",
     },
     {
         key: "X-Content-Type-Options",
@@ -35,7 +35,7 @@ const securityHeaders = [
             "font-src 'self' data:",
             "connect-src 'self' http: https: ws: wss:",
             "frame-src 'self' https://www.google.com https://maps.google.com",
-            "frame-ancestors 'none'",
+            "frame-ancestors 'self'",
         ].join("; "),
     },
 ];
