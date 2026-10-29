@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, IS_STAGING } from "@/lib/seo";
 import {
   complaintPages,
   ppidDetailPages,
@@ -66,6 +66,8 @@ async function fetchPublic<T>(endpoint: string): Promise<T | null> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  if (IS_STAGING) return [];
+
   const entries: MetadataRoute.Sitemap = staticRoutes.map((route) =>
     routeEntry(route, route === "/" ? 1 : 0.7),
   );

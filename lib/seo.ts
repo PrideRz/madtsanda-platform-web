@@ -4,6 +4,7 @@ import type { ResearchItem } from "@/types/dto/research";
 
 export const SITE_URL =
   process.env.NEXT_PUBLIC_BASE_URL || "https://www.mtsn2kotakediri.sch.id";
+export const IS_STAGING = process.env.NEXT_PUBLIC_IS_STAGING === "true";
 
 export const SCHOOL_NAME = "MTsN 2 Kota Kediri";
 export const SITE_NAME = "Madtsanda Platform";

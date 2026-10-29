@@ -5,8 +5,6 @@ import { getUserProfile } from "@/features/dashboard/profile/services";
 import { getStudentByToken } from "@/features/dashboard/student/services";
 import { getTeacherByToken } from "@/features/dashboard/teacher/services";
 import { redirect } from "next/navigation";
-import { PopupSlideshow } from "@/features/popup/components";
-import { getActivePopupsService } from "@/features/popup/services";
 
 export default async function DashboardPage() {
   const user = await getUserProfile();
@@ -14,14 +12,12 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const [student, teacher, popups] = await Promise.all([
+  const [student, teacher] = await Promise.all([
     user.data.role === "student" ? getStudentByToken() : Promise.resolve(null),
     user.data.role === "teacher" ? getTeacherByToken() : Promise.resolve(null),
-    getActivePopupsService(),
   ]);
   return (
     <div>
-      <PopupSlideshow items={popups} />
       <div className="px-4">
         <HomeHeader />
       </div>
