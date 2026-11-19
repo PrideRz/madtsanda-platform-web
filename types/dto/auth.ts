@@ -1,7 +1,7 @@
 import { UserDTO } from "./user";
 
 export interface LoginDTO {
-  email: string;
+  username: string;
   password: string;
 }
 

@@ -43,7 +43,7 @@ export function SidebarHeader({ user, student, teacher }: SidebarHeaderProps) {
                   {user.username}
                 </span>
                 <span className="text-[10px] uppercase tracking-wider opacity-50 font-bold">
-                  {user.role === "super_user" ? "Super Access" : user.role}
+                  {user.role === "super_user" ? "Master" : user.role}
                 </span>
               </div>
 

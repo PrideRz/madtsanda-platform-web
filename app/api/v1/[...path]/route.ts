@@ -11,7 +11,7 @@ type LocalUser = {
   username: string;
   email: string;
   initials: string;
-  role: "admin";
+  role: "super_user";
   createdAt: string;
   updatedAt: string;
 };
@@ -64,7 +64,7 @@ function isLocalRequest(request: NextRequest) {
 
 function getUser(): LocalUser {
   const now = new Date().toISOString();
-  const username = process.env.LOCAL_API_USERNAME || "Master Lokal";
+  const username = process.env.LOCAL_API_USERNAME || "master";
   const email = process.env.LOCAL_API_EMAIL || "master@mtsn2kk.sch.id";
 
   return {
@@ -77,7 +77,7 @@ function getUser(): LocalUser {
       .join("")
       .slice(0, 2)
       .toUpperCase(),
-    role: "admin",
+      role: "super_user",
     createdAt: now,
     updatedAt: now,
   };
@@ -249,22 +249,22 @@ async function handle(request: NextRequest) {
 
   if (path === "auth/login" && method === "POST") {
     const body = (await request.json().catch(() => ({}))) as {
-      email?: string;
+      username?: string;
       password?: string;
     };
-    const email = process.env.LOCAL_API_EMAIL;
+    const username = process.env.LOCAL_API_USERNAME || "master";
     const password = process.env.LOCAL_API_PASSWORD;
 
-    if (!email || !password) {
+    if (!username || !password) {
       return json({ message: "Kredensial Local API belum dikonfigurasi." }, 500);
     }
 
-    if (body.email !== email || body.password !== password) {
-      return json({ message: "Email atau kata sandi lokal salah." }, 401);
+    if (body.username !== username || body.password !== password) {
+      return json({ message: "Username atau kata sandi lokal salah." }, 401);
     }
 
     const token = randomUUID();
-    sessions.set(token, email);
+    sessions.set(token, username);
     return json({ data: { token, user: getUser() }, message: "Login lokal berhasil." });
   }
 

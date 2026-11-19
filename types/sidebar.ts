@@ -6,6 +6,7 @@ export interface SidebarItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   route: string;
+  roles?: Role[];
   badge?: string;
   hasSubItems?: boolean;
   subItems?: {
@@ -16,5 +17,6 @@ export interface SidebarItem {
     icon: React.ComponentType<{ className?: string }>;
     description?: string;
     route: string;
+    roles?: Role[];
   }[];
 }

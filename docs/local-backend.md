@@ -10,7 +10,7 @@ npm run dev
 
 Buka `http://localhost:3000/login` dan gunakan:
 
-- Email: `master@mtsn2kk.sch.id`
+- Username: `master`
 - Password: `local123456`
 
 API ini hanya merespons ketika `NODE_ENV=development`, `LOCAL_API_ENABLED=true`, dan host request adalah `localhost`, `127.0.0.1`, atau `::1`. Popup lokal dapat dibuat, diaktifkan, dihapus, dan menyimpan gambar di `.local-data/popup-assets`; data tersebut tidak masuk Git. Endpoint konten lain masih mengembalikan data kosong.

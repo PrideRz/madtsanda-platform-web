@@ -49,7 +49,7 @@ export function LoginForm() {
       keepValues: true,
     },
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
@@ -62,9 +62,9 @@ export function LoginForm() {
       onSubmit={form.handleSubmit(onSubmit)}
       className="space-y-5"
     >
-      {/* Input Email */}
+      {/* Input Username */}
       <Controller
-        name="email"
+        name="username"
         control={form.control}
         render={({ field, fieldState }) => (
           <Field>
@@ -77,7 +77,7 @@ export function LoginForm() {
                 htmlFor={field.name}
                 className="text-zinc-700 dark:text-zinc-300"
               >
-                Email Murid / Guru
+                Username
               </FieldLabel>
             </motion.div>
             <motion.div
@@ -88,8 +88,11 @@ export function LoginForm() {
               <Input
                 {...field}
                 id={field.name}
-                type="email" // Ubah ke email untuk validasi HTML5 dasar
-                placeholder="contoh: user@mtsn2kotakediri.sch.id"
+                type="text"
+                autoComplete="username"
+                autoCapitalize="none"
+                spellCheck={false}
+                placeholder="Masukkan username"
                 className={`h-10 rounded-xl border-zinc-200 bg-white/70 text-sm focus-visible:border-emerald-400 dark:border-zinc-700 dark:bg-zinc-800/70 ${
                   fieldState.invalid
                     ? "border-red-500 focus-visible:ring-red-500"
@@ -132,6 +135,7 @@ export function LoginForm() {
                 {...field}
                 id={field.name}
                 type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
                 placeholder="Masukkan kata sandi"
                 className={`font-mono h-10 rounded-xl border-zinc-200 bg-white/70 pr-10 text-sm focus-visible:border-emerald-400 dark:border-zinc-700 dark:bg-zinc-800/70 ${
                   fieldState.invalid

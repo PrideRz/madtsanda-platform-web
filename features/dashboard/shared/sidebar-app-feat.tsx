@@ -28,11 +28,11 @@ export function SidebarAppFeat({ items, user }: SidebarAppFeatProps) {
   const userRole: Role = user.role;
 
   const filteredSidebar = items
-    .filter((item) => hasAccess(userRole, item.minRole))
+    .filter((item) => item.roles ? item.roles.includes(userRole) : hasAccess(userRole, item.minRole))
     .map((item) => ({
       ...item,
       subItems: item.subItems?.filter((sub) =>
-        hasAccess(userRole, sub.minRole),
+        sub.roles ? sub.roles.includes(userRole) : hasAccess(userRole, sub.minRole),
       ),
     }));
   return (
