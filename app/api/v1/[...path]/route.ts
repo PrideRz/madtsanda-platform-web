@@ -6,15 +6,20 @@ import type { NextRequest } from "next/server";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+type LocalRole = "admin" | "administrator" | "super_user" | "student" | "teacher";
+
 type LocalUser = {
   id: string;
   username: string;
   email: string;
   initials: string;
-  role: "super_user";
+  role: LocalRole;
+  active: boolean;
   createdAt: string;
   updatedAt: string;
 };
+
+type LocalStoredUser = LocalUser & { password: string };
 
 type LocalPopup = {
   id: string;
@@ -33,10 +38,14 @@ type LocalPopup = {
 // Keep local sessions across Next.js development hot reloads.
 const localGlobal = globalThis as typeof globalThis & {
   __madtsandaLocalSessions?: Map<string, string>;
+  __madtsandaLocalUsers?: Map<string, LocalStoredUser>;
 };
 const sessions =
   localGlobal.__madtsandaLocalSessions ?? new Map<string, string>();
 localGlobal.__madtsandaLocalSessions = sessions;
+const localUsers =
+  localGlobal.__madtsandaLocalUsers ?? new Map<string, LocalStoredUser>();
+localGlobal.__madtsandaLocalUsers = localUsers;
 const popupStorePath = join(process.cwd(), ".local-data", "popups.json");
 const popupAssetsPath = join(process.cwd(), ".local-data", "popup-assets");
 const popupImageTypes = {
@@ -62,25 +71,52 @@ function isLocalRequest(request: NextRequest) {
   return /^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/i.test(host);
 }
 
-function getUser(): LocalUser {
+function publicUser(user: LocalStoredUser): LocalUser {
+  const { password: _password, ...safeUser } = user;
+  return safeUser;
+}
+
+function ensureLocalUsers(): Map<string, LocalStoredUser> {
   const now = new Date().toISOString();
   const username = process.env.LOCAL_API_USERNAME || "master";
   const email = process.env.LOCAL_API_EMAIL || "master@mtsn2kk.sch.id";
+  const existing = localUsers.get(username);
 
-  return {
-    id: "local-admin",
-    username,
-    email,
-    initials: username
-      .split(/\s+/)
-      .map((part) => part[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase(),
+  if (!existing) {
+    localUsers.set(username, {
+      id: "local-admin",
+      username,
+      email,
+      initials: username
+        .split(/\s+/)
+        .map((part) => part[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase(),
       role: "super_user",
-    createdAt: now,
-    updatedAt: now,
-  };
+      active: true,
+      password: process.env.LOCAL_API_PASSWORD || "master",
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  return localUsers;
+}
+
+function getUser(username = process.env.LOCAL_API_USERNAME || "master") {
+  const user = ensureLocalUsers().get(username);
+  return user ? publicUser(user) : null;
+}
+
+function isAccountManager(
+  user: LocalUser | null,
+): user is LocalUser & { role: "administrator" | "super_user" } {
+  return user?.role === "administrator" || user?.role === "super_user";
+}
+
+function isLocalRole(value: unknown): value is LocalRole {
+  return ["admin", "administrator", "super_user", "student", "teacher"].includes(value as LocalRole);
 }
 
 function getToken(request: NextRequest) {
@@ -90,8 +126,11 @@ function getToken(request: NextRequest) {
 
 function getAuthenticatedUser(request: NextRequest) {
   const token = getToken(request);
-  if (!token || !sessions.has(token)) return null;
-  return getUser();
+  if (!token) return null;
+  const username = sessions.get(token);
+  if (!username) return null;
+  const user = getUser(username);
+  return user?.active === false ? null : user;
 }
 
 async function readPopups(): Promise<LocalPopup[]> {
@@ -252,20 +291,16 @@ async function handle(request: NextRequest) {
       username?: string;
       password?: string;
     };
-    const username = process.env.LOCAL_API_USERNAME || "master";
-    const password = process.env.LOCAL_API_PASSWORD;
+    const username = body.username?.trim() || "";
+    const user = ensureLocalUsers().get(username);
 
-    if (!username || !password) {
-      return json({ message: "Kredensial Local API belum dikonfigurasi." }, 500);
-    }
-
-    if (body.username !== username || body.password !== password) {
+    if (!user || user.active === false || body.password !== user.password) {
       return json({ message: "Username atau kata sandi lokal salah." }, 401);
     }
 
     const token = randomUUID();
-    sessions.set(token, username);
-    return json({ data: { token, user: getUser() }, message: "Login lokal berhasil." });
+    sessions.set(token, user.username);
+    return json({ data: { token, user: publicUser(user) }, message: "Login lokal berhasil." });
   }
 
   if (path === "auth/me" && method === "GET") {
@@ -279,6 +314,162 @@ async function handle(request: NextRequest) {
     const token = getToken(request);
     if (token) sessions.delete(token);
     return json({ data: null, message: "Logout lokal berhasil." });
+  }
+
+  if (path === "user" && method === "GET") {
+    const currentUser = getAuthenticatedUser(request);
+    if (!isAccountManager(currentUser)) {
+      return json({ message: "Akses kelola akun ditolak." }, 403);
+    }
+
+    return json({ data: Array.from(ensureLocalUsers().values()).map(publicUser) });
+  }
+
+  if (path === "user" && method === "POST") {
+    const currentUser = getAuthenticatedUser(request);
+    if (!isAccountManager(currentUser)) {
+      return json({ message: "Akses kelola akun ditolak." }, 403);
+    }
+
+    const body = (await request.json().catch(() => ({}))) as {
+      username?: string;
+      email?: string;
+      role?: unknown;
+    };
+    const username = body.username?.trim() || "";
+    if (!username || !isLocalRole(body.role)) {
+      return json({ message: "Username dan role wajib diisi." }, 400);
+    }
+    if (currentUser.role === "administrator" && body.role === "super_user") {
+      return json({ message: "Administrator tidak dapat membuat akun Master." }, 403);
+    }
+
+    const users = ensureLocalUsers();
+    if (Array.from(users.values()).some((user) => user.username.toLowerCase() === username.toLowerCase())) {
+      return json({ message: "Username sudah digunakan." }, 409);
+    }
+    if (body.role === "super_user" && Array.from(users.values()).some((user) => user.role === "super_user")) {
+      return json({ message: "Akun Master hanya boleh satu." }, 409);
+    }
+
+    const now = new Date().toISOString();
+    const created: LocalStoredUser = {
+      id: randomUUID(),
+      username,
+      email: body.email?.trim() || `${username}@mtsn2kk.sch.id`,
+      initials: username
+        .split(/\s+/)
+        .map((part) => part[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase(),
+      role: body.role,
+      active: true,
+      password: username,
+      createdAt: now,
+      updatedAt: now,
+    };
+    users.set(created.username, created);
+    return json({ data: { token: null, user: publicUser(created) } }, 201);
+  }
+
+  const managedUserMatch = path.match(/^user\/([^/]+)$/);
+  if (managedUserMatch && method === "PATCH") {
+    const currentUser = getAuthenticatedUser(request);
+    if (!isAccountManager(currentUser)) {
+      return json({ message: "Akses kelola akun ditolak." }, 403);
+    }
+
+    const users = ensureLocalUsers();
+    const target = Array.from(users.values()).find((user) => user.id === managedUserMatch[1]);
+    if (!target) return json({ message: "Akun tidak ditemukan." }, 404);
+    if (currentUser.role === "administrator" && target.role === "super_user") {
+      return json({ message: "Administrator tidak dapat mengubah akun Master." }, 403);
+    }
+
+    const body = (await request.json().catch(() => ({}))) as {
+      username?: string;
+      email?: string;
+      role?: unknown;
+      active?: unknown;
+    };
+    if (body.role !== undefined && (!isLocalRole(body.role) || (target.role === "super_user" && body.role !== "super_user"))) {
+      return json({ message: "Role akun tidak valid." }, 400);
+    }
+    if (
+      body.role === "super_user" &&
+      target.role !== "super_user" &&
+      Array.from(users.values()).some((user) => user.role === "super_user")
+    ) {
+      return json({ message: "Akun Master hanya boleh satu." }, 409);
+    }
+    if (body.username?.trim() && body.username.trim() !== target.username) {
+      const nextUsername = body.username.trim();
+      if (Array.from(users.values()).some((user) => user.id !== target.id && user.username.toLowerCase() === nextUsername.toLowerCase())) {
+        return json({ message: "Username sudah digunakan." }, 409);
+      }
+      users.delete(target.username);
+      target.username = nextUsername;
+      users.set(target.username, target);
+    }
+    if (body.email !== undefined) target.email = String(body.email).trim();
+    if (body.role !== undefined) target.role = body.role;
+    if (typeof body.active === "boolean") target.active = body.active;
+    target.updatedAt = new Date().toISOString();
+    return json({ data: publicUser(target) });
+  }
+
+  const passwordMatch = path.match(/^user\/([^/]+)\/password$/);
+  if (passwordMatch && method === "PATCH") {
+    const currentUser = getAuthenticatedUser(request);
+    if (!isAccountManager(currentUser)) {
+      return json({ message: "Akses reset password ditolak." }, 403);
+    }
+
+    const target = Array.from(ensureLocalUsers().values()).find((user) => user.id === passwordMatch[1]);
+    if (!target) return json({ message: "Akun tidak ditemukan." }, 404);
+    if (currentUser.role === "administrator" && target.role === "super_user") {
+      return json({ message: "Administrator tidak dapat mengatur ulang password akun Master." }, 403);
+    }
+
+    const body = (await request.json().catch(() => ({}))) as { password?: string };
+    if (!body.password || body.password.length < 6) {
+      return json({ message: "Password baru minimal 6 karakter." }, 400);
+    }
+    target.password = body.password;
+    target.updatedAt = new Date().toISOString();
+    return json({
+      data: { message: "Password berhasil diatur ulang.", user: publicUser(target) },
+    });
+  }
+
+  if (path === "user" && method === "DELETE") {
+    const currentUser = getAuthenticatedUser(request);
+    if (!isAccountManager(currentUser)) {
+      return json({ message: "Akses kelola akun ditolak." }, 403);
+    }
+
+    const targetId = request.nextUrl.searchParams.get("id");
+    const users = ensureLocalUsers();
+    const target = Array.from(users.values()).find((user) => user.id === targetId);
+    if (!targetId || !target) return json({ message: "Akun tidak ditemukan." }, 404);
+    if (target.id === currentUser.id) return json({ message: "Anda tidak dapat menghapus akun sendiri." }, 403);
+    if (target.role === "super_user") return json({ message: "Akun Master tidak dapat dihapus." }, 403);
+    users.delete(target.username);
+    return json({ data: { message: "Akun berhasil dihapus." } });
+  }
+
+  if (path === "user/lookup" && method === "GET") {
+    const currentUser = getAuthenticatedUser(request);
+    if (!isAccountManager(currentUser)) {
+      return json({ message: "Akses reset password ditolak." }, 403);
+    }
+
+    const username = request.nextUrl.searchParams.get("username")?.trim() || "";
+    const target = Array.from(ensureLocalUsers().values()).find((user) => user.username === username);
+    return target
+      ? json({ data: { id: target.id, username: target.username, role: target.role, active: target.active } })
+      : json({ message: "Akun tidak ditemukan." }, 404);
   }
 
   if (path === "student/token" || path === "teacher/token") {
