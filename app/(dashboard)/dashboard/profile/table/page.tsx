@@ -5,7 +5,10 @@ import { AccountManager } from "@/features/dashboard/profile/components/account-
 
 export default async function UserProfileTablePage() {
   const currentUser = await getUserProfile();
-  if (!currentUser || currentUser.data.role !== "super_user") {
+  if (
+    !currentUser ||
+    (currentUser.data.role !== "administrator" && currentUser.data.role !== "super_user")
+  ) {
     redirect("/dashboard");
   }
 
@@ -22,8 +25,6 @@ export default async function UserProfileTablePage() {
     );
   }
 
-  // Ensure users is an array. If getUsersProfile returns a single UserDTO for data,
-  // we wrap it in an array to maintain consistency for mapping.
   const users: UserDTO[] = usersResponse.data;
 
   return <div className="p-4"><AccountManager initialUsers={users} /></div>;

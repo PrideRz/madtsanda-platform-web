@@ -26,17 +26,22 @@ export const getUserProfile = cache(async (): Promise<UserResponseDTO | null> =>
 });
 
 /**
- * Mengambil seluruh daftar pengguna (hanya dapat diakses oleh admin / super_user).
+ * Mengambil seluruh daftar pengguna (hanya dapat diakses oleh administrator / master).
  */
+type UserListApiResponse = {
+  data?: UserDTO[] | { data?: UserDTO[] };
+};
+
 export async function getAllUsers(): Promise<UserListResponseDTO | null> {
   try {
-    const response = await request<UserListResponseDTO>(`/user`, {
+    const response = await request<UserListApiResponse>(`/user`, {
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    return response;
+    const data = response.data;
+    return { data: Array.isArray(data) ? data : data?.data ?? [] };
   } catch (error: unknown) {
     logger.error(errorFormat(error));
     return null;

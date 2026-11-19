@@ -38,7 +38,7 @@ export const sidebarItems: SidebarItem[] = [
         icon: Settings24Color,
         minRole: "admin",
         route: "/dashboard/profile/table",
-        roles: ["super_user"],
+        roles: ["administrator", "super_user"],
       },
     ],
   },

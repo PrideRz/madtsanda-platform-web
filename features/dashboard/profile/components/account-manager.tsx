@@ -94,7 +94,7 @@ export function AccountManager({ initialUsers }: { initialUsers: UserDTO[] }) {
     <Card className="w-full shadow-lg">
       <CardHeader>
         <CardTitle>Kelola Akun</CardTitle>
-        <p className="text-sm text-muted-foreground">Master dapat mengubah role dan status akun. Password lama tidak pernah ditampilkan.</p>
+        <p className="text-sm text-muted-foreground">Master dan Administrator dapat mengatur akun. Password lama tidak pernah ditampilkan.</p>
       </CardHeader>
       <CardContent>
         <form className="mb-5 grid gap-3 rounded-lg border bg-muted/20 p-4 sm:grid-cols-[1fr_1fr_auto]" onSubmit={createUser} aria-labelledby="new-account-title">
