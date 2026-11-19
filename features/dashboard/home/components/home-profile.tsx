@@ -10,6 +10,14 @@ import {
 
 import { HomeProfileProps } from "@/types/components";
 
+const roleLabels = {
+  admin: "Admin",
+  administrator: "Administrator",
+  super_user: "Master",
+  student: "Siswa",
+  teacher: "Guru",
+} as const;
+
 export function HomeProfile({ user, student, teacher }: HomeProfileProps) {
   const profileUrl = student?.profileUrl || teacher?.profileUrl;
   return (
@@ -28,7 +36,7 @@ export function HomeProfile({ user, student, teacher }: HomeProfileProps) {
         </div>
         <h4 className="font-bold text-lg">{user.username}</h4>
         <Badge className="capitalize">
-          {user.role === "super_user" ? "Master" : user.role}
+          {roleLabels[user.role]}
         </Badge>
       </div>
 

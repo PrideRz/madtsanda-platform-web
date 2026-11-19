@@ -14,7 +14,13 @@ import type { UserDTO } from "@/types/dto/user";
 const roles: UserDTO["role"][] = ["teacher", "student", "administrator", "admin", "super_user"];
 
 function roleLabel(role: UserDTO["role"]) {
-  return role === "super_user" ? "Master" : role;
+  return {
+    admin: "Admin",
+    administrator: "Administrator",
+    super_user: "Master",
+    student: "Siswa",
+    teacher: "Guru",
+  }[role];
 }
 
 function roleClass(role: UserDTO["role"]) {

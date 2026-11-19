@@ -27,14 +27,16 @@ export function SidebarAppFeat({ items, user }: SidebarAppFeatProps) {
   const pathname = usePathname();
   const userRole: Role = user.role;
 
+  const canSee = (roles: Role[] | undefined, minRole: Role) =>
+    userRole === "super_user" || (roles ? roles.includes(userRole) : hasAccess(userRole, minRole));
+
   const filteredSidebar = items
-    .filter((item) => item.roles ? item.roles.includes(userRole) : hasAccess(userRole, item.minRole))
+    .filter((item) => canSee(item.roles, item.minRole))
     .map((item) => ({
       ...item,
-      subItems: item.subItems?.filter((sub) =>
-        sub.roles ? sub.roles.includes(userRole) : hasAccess(userRole, sub.minRole),
-      ),
-    }));
+      subItems: item.subItems?.filter((sub) => canSee(sub.roles, sub.minRole)),
+    }))
+    .filter((item) => !item.hasSubItems || Boolean(item.subItems?.length));
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>

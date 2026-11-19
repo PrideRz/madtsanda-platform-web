@@ -1,7 +1,6 @@
 "use client";
 
 import { quickLink } from "@/components/data/quick-link";
-import { hasAccess } from "@/lib/access";
 import { Role } from "@/types/access";
 import Link from "next/link";
 
@@ -11,10 +10,7 @@ export function HomeQuickLink({ user }: HomeQuickLinkProps) {
   const userRole: Role = user.role;
 
   const filteredQuickLink = quickLink
-    .filter((item) => hasAccess(userRole, item.role))
-    .map((item) => ({
-      ...item,
-    }));
+    .filter((item) => userRole === "super_user" || item.roles.includes(userRole));
 
   return (
     <div className="lg:col-span-2 border-2 p-4 rounded-xl bg-card border-dashed">

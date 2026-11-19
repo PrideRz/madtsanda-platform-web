@@ -21,6 +21,14 @@ import { handleLogout } from "@/features/auth/actions/logout";
 
 import { SidebarHeaderProps } from "@/types/components";
 
+const roleLabels = {
+  admin: "Admin",
+  administrator: "Administrator",
+  super_user: "Master",
+  student: "Siswa",
+  teacher: "Guru",
+} as const;
+
 export function SidebarHeader({ user, student, teacher }: SidebarHeaderProps) {
   const profileImage = student?.profileUrl || teacher?.profileUrl;
 
@@ -43,7 +51,7 @@ export function SidebarHeader({ user, student, teacher }: SidebarHeaderProps) {
                   {user.username}
                 </span>
                 <span className="text-[10px] uppercase tracking-wider opacity-50 font-bold">
-                  {user.role === "super_user" ? "Master" : user.role}
+                  {roleLabels[user.role]}
                 </span>
               </div>
 
